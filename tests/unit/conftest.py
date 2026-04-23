@@ -1,5 +1,10 @@
+import os
 import pytest
 from pyspark.sql import SparkSession
+
+# Windows fix: PySpark worker needs 'python', not 'python3'
+os.environ.setdefault("PYSPARK_PYTHON", "python")
+os.environ.setdefault("PYSPARK_DRIVER_PYTHON", "python")
 
 
 @pytest.fixture(scope="session")

@@ -7,20 +7,19 @@ from pyspark.sql import functions as F
 AML_RULES = [
     {
         "flag": "HIGH_VALUE_SINGLE_TXN",
-        "condition": F.col("amount") > 100_000,
+        "condition_sql": "amount > 100000",
         "risk_score": 0.6,
         "description": "Single transaction > EUR 100,000",
     },
     {
-        "flag": "CROSS_BORDER_HIGH_RISK",
-        "condition": (F.col("country_code").isin(["RU", "BY", "IR", "KP", "SY"]))
-                     & (F.col("amount") > 1_000),
+        "flag": "HIGH_RISK_JURISDICTION",
+        "condition_sql": "country_code IN ('RU','BY','IR','KP','SY') AND amount > 1000",
         "risk_score": 0.9,
-        "description": "Cross-border to sanctioned jurisdiction",
+        "description": "Transaction involving high-risk jurisdiction",
     },
     {
         "flag": "ROUND_AMOUNT",
-        "condition": (F.col("amount") % 10_000 == 0) & (F.col("amount") >= 10_000),
+        "condition_sql": "amount % 10000 = 0 AND amount >= 10000",
         "risk_score": 0.3,
         "description": "Suspiciously round large amount",
     },
@@ -28,29 +27,27 @@ AML_RULES = [
 
 
 class AmlRuleEngine:
-    """
-    Applies rule-based AML flags to a Silver payments DataFrame.
-    Returns original DataFrame with added columns:
-      aml_flags (array<string>), max_risk_score (double), is_flagged (boolean)
-    """
-
     def apply(self, df: DataFrame) -> DataFrame:
         for rule in AML_RULES:
             df = df.withColumn(
                 f"_flag_{rule['flag']}",
-                F.when(rule["condition"], rule["risk_score"]).otherwise(None),
+                F.when(F.expr(rule["condition_sql"]), F.lit(rule["risk_score"])).otherwise(F.lit(None)),
             )
 
         flag_cols = [f"_flag_{r['flag']}" for r in AML_RULES]
-        flag_name_cols = [
-            F.when(F.col(c).isNotNull(), F.lit(c.replace("_flag_", "")))
+        flag_name_exprs = [
+            F.when(F.col(c).isNotNull(), F.lit(c.replace("_flag_", ""))).otherwise(F.lit(None))
             for c in flag_cols
         ]
 
+        df = df.withColumn("aml_flags_raw", F.array(*flag_name_exprs))
+        df = df.withColumn("aml_flags", F.expr("filter(aml_flags_raw, x -> x is not null)"))
+
+        score_exprs = [F.coalesce(F.col(c), F.lit(0.0)) for c in flag_cols]
+
         df = (
-            df.withColumn("aml_flags", F.array_compact(F.array(*flag_name_cols)))
-            .withColumn("max_risk_score", F.greatest(*[F.coalesce(F.col(c), F.lit(0.0)) for c in flag_cols]))
+            df.withColumn("max_risk_score", F.greatest(*score_exprs))
             .withColumn("is_flagged", F.size(F.col("aml_flags")) > 0)
-            .drop(*flag_cols)
+            .drop("aml_flags_raw", *flag_cols)
         )
         return df

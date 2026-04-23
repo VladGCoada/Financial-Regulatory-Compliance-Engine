@@ -14,37 +14,33 @@ logger = logging.getLogger(__name__)
 
 
 class SilverPaymentsTask(BaseTask):
-    """
-    Reads bronze.raw_payments, validates DQ rules, routes bad rows
-    to bronze.quarantine_payments, writes clean rows to silver.payments.
-    Source: moussadiakite quarantine + SCD2 patterns.
-    """
-
     def __init__(self, config: FrceConfig) -> None:
         super().__init__(config)
         self.validator = DQValidator(PAYMENT_DQ_RULES)
 
     def read_bronze(self) -> DataFrame:
-        return self.get_spark().read.format("delta").table(
-            f"{self.config.catalog}.bronze.raw_payments"
-        )
+        return self.get_spark().read.format("delta").table(self.config.payments_bronze_table)
 
     def cast_and_clean(self, df: DataFrame) -> DataFrame:
-        return (
-            df.withColumn("amount", F.col("amount").cast("double"))
-            .withColumn("booked_at", F.col("booked_at").cast("timestamp"))
-            .withColumn("ingested_at", F.col("ingested_at").cast("timestamp"))
-            .withColumn("country_code", F.upper(F.trim(F.col("country_code"))))
-            .withColumn("currency", F.upper(F.trim(F.col("currency"))))
-        )
+        if "amount" in df.columns:
+            df = df.withColumn("amount", F.col("amount").cast("double"))
+        if "booked_at" in df.columns:
+            df = df.withColumn("booked_at", F.col("booked_at").cast("timestamp"))
+        if "ingested_at" in df.columns:
+            df = df.withColumn("ingested_at", F.col("ingested_at").cast("timestamp"))
+        if "country_code" in df.columns:
+            df = df.withColumn("country_code", F.upper(F.trim(F.col("country_code"))))
+        if "currency" in df.columns:
+            df = df.withColumn("currency", F.upper(F.trim(F.col("currency"))))
+        return df
 
     def write_silver(self, df: DataFrame) -> None:
-        target = f"{self.config.catalog}.silver.payments"
-        df.write.format("delta").mode("append").option("mergeSchema", "false").saveAsTable(target)
+        df.write.format("delta").mode("append").option("mergeSchema", "false").saveAsTable(
+            self.config.silver_payments_table
+        )
 
     def write_quarantine(self, df: DataFrame) -> None:
-        target = f"{self.config.catalog}.bronze.quarantine_payments"
-        df.write.format("delta").mode("append").saveAsTable(target)
+        df.write.format("delta").mode("append").saveAsTable(self.config.quarantine_payments_table)
 
     def run(self) -> None:
         df = self.read_bronze()
@@ -53,7 +49,8 @@ class SilverPaymentsTask(BaseTask):
         self.write_silver(result.good)
         if result.total_quarantine > 0:
             self.write_quarantine(result.quarantine)
-        logger.info(
+        self.logger.info(
             "SilverPayments: %d good / %d quarantined",
-            result.total_good, result.total_quarantine,
+            result.total_good,
+            result.total_quarantine,
         )

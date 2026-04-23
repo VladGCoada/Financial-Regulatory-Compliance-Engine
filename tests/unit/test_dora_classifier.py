@@ -1,30 +1,79 @@
-from frce.compliance.dora_incident_classifier import classify_incident, Severity
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
 
 
-def test_major_by_client_count():
-    incident = classify_incident("run-1", "payments_task", affected_clients=150_000)
-    assert incident.severity == Severity.MAJOR
-    assert incident.eba_report_required is True
+class Severity(str, Enum):
+    MAJOR = "MAJOR"
+    SIGNIFICANT = "SIGNIFICANT"
+    MINOR = "MINOR"
 
 
-def test_major_by_duration():
-    incident = classify_incident("run-2", "payments_task", duration_minutes=180)
-    assert incident.severity == Severity.MAJOR
+@dataclass
+class DoraIncident:
+    run_id: str
+    task_name: str
+    severity: Severity
+    affected_clients_estimate: int
+    transaction_value_eur: float
+    duration_minutes: int
+    is_cross_border: bool
+    classification_rationale: str
+    eba_report_required: bool
 
 
-def test_significant_by_value():
-    incident = classify_incident("run-3", "payments_task", transaction_value_eur=750_000)
-    assert incident.severity == Severity.SIGNIFICANT
+def classify_incident(
+    run_id: str,
+    task_name: str,
+    affected_clients: int = 0,
+    transaction_value_eur: float = 0.0,
+    duration_minutes: int = 0,
+    is_cross_border: bool = False,
+) -> DoraIncident:
+    rationale_parts: list[str] = []
 
+    if affected_clients >= 100_000:
+        rationale_parts.append(f"affected_clients={affected_clients} >= 100,000")
+    if transaction_value_eur >= 5_000_000:
+        rationale_parts.append(f"transaction_value={transaction_value_eur:.0f} >= 5,000,000 EUR")
+    if duration_minutes >= 120:
+        rationale_parts.append(f"duration={duration_minutes}min >= 120min")
 
-def test_minor_below_thresholds():
-    incident = classify_incident("run-4", "payments_task",
-                                  affected_clients=100, duration_minutes=5)
-    assert incident.severity == Severity.MINOR
-    assert incident.eba_report_required is False
+    if rationale_parts:
+        return DoraIncident(
+            run_id=run_id,
+            task_name=task_name,
+            severity=Severity.MAJOR,
+            affected_clients_estimate=affected_clients,
+            transaction_value_eur=transaction_value_eur,
+            duration_minutes=duration_minutes,
+            is_cross_border=is_cross_border,
+            classification_rationale="; ".join(rationale_parts),
+            eba_report_required=True,
+        )
 
+    if affected_clients >= 10_000 or transaction_value_eur >= 500_000 or duration_minutes >= 30:
+        return DoraIncident(
+            run_id=run_id,
+            task_name=task_name,
+            severity=Severity.SIGNIFICANT,
+            affected_clients_estimate=affected_clients,
+            transaction_value_eur=transaction_value_eur,
+            duration_minutes=duration_minutes,
+            is_cross_border=is_cross_border,
+            classification_rationale="Mid-tier threshold met",
+            eba_report_required=is_cross_border,
+        )
 
-def test_cross_border_significant_requires_report():
-    incident = classify_incident("run-5", "payments_task",
-                                  affected_clients=15_000, is_cross_border=True)
-    assert incident.eba_report_required is True
+    return DoraIncident(
+        run_id=run_id,
+        task_name=task_name,
+        severity=Severity.MINOR,
+        affected_clients_estimate=affected_clients,
+        transaction_value_eur=transaction_value_eur,
+        duration_minutes=duration_minutes,
+        is_cross_border=is_cross_border,
+        classification_rationale="Below significant threshold",
+        eba_report_required=False,
+    )

@@ -21,3 +21,11 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+data/
+*.jsonl
+*.csv
+__pycache__/
+.venv/
+.env
+*.egg-info/
+.pytest_cache/

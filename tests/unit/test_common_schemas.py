@@ -1,11 +1,14 @@
-from frce.common_schemas import SEPA_PAYMENT_SCHEMA
+from frce.common_schemas import COUNTERPARTY_SCHEMA, FX_RATE_SCHEMA
 
+def test_counterparty_schema_fields():
+    names = [f.name for f in COUNTERPARTY_SCHEMA.fields]
+    assert "counterparty_id" in names
+    assert "iban" in names
+    assert "risk_tier" in names
 
-def test_sepa_payment_schema_contains_expected_fields() -> None:
-    field_names = [field.name for field in SEPA_PAYMENT_SCHEMA.fields]
-
-    assert "payment_id" in field_names
-    assert "debtor_iban" in field_names
-    assert "creditor_iban" in field_names
-    assert "amount" in field_names
-    assert "ingested_at" in field_names
+def test_fx_rate_schema_fields():
+    names = [f.name for f in FX_RATE_SCHEMA.fields]
+    assert "base_currency" in names
+    assert "rate" in names
+    
+    

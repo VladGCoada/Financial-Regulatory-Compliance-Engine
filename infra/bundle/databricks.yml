@@ -1,0 +1,6 @@
+bundle:
+  name: databricks-financial-regulatory-engine-pyspark
+
+include:
+  - resources/*.yml
+  - targets/*.yml

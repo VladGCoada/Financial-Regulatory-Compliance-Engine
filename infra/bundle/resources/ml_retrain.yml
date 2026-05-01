@@ -1,0 +1,8 @@
+resources:
+  jobs:
+    frce_ml_scoring:
+      name: frce_ml_scoring_${bundle.target}
+      tasks:
+        - task_key: anomaly_scoring
+          spark_python_task:
+            python_file: ../../apps/ml_scoring/frce_anomaly_scoring.py

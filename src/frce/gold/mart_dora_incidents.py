@@ -5,9 +5,9 @@ import logging
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
-from frce.base_task import BaseTask
-from frce.compliance.dora_incident_classifier import classify_incident, Severity
+from frce.compliance.dora_incident_classifier import classify_incident
 from frce.config import FrceConfig
+from frce.core import BaseTask
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class MartDoraIncidentsTask(BaseTask):
         return (
             self.get_spark()
             .read.format("delta")
-            .table(f"{self.config.catalog}.audit.pipeline_runs")
+            .table(self.config.audit_pipeline_runs_table)
             .filter(F.col("status") == "FAILED")
         )
 
@@ -63,6 +63,10 @@ class MartDoraIncidentsTask(BaseTask):
             return
         spark = self.get_spark()
         df = spark.createDataFrame(incidents)
-        target = f"{self.config.catalog}.gold.mart_dora_incidents"
+        target = self.config.gold_mart_dora_incidents_table
         df.write.format("delta").mode("append").saveAsTable(target)
         logger.info("MartDoraIncidentsTask: wrote %d incidents", len(incidents))
+
+
+def main() -> None:
+    MartDoraIncidentsTask(FrceConfig()).run()

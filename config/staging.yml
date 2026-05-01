@@ -1,0 +1,4 @@
+environment: staging
+catalog: frce_staging
+storage_account: frcestagingstorage
+kafka_payments_topic: sepa-payments

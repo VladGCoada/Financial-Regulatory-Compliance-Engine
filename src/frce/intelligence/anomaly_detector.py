@@ -43,12 +43,11 @@ class AnomalyDetector(BaseTask):
         Apply model UDF to feature-engineered DataFrame.
         model must expose a predict(pandas_df) interface.
         """
-        from pyspark.sql.functions import pandas_udf
         import pandas as pd
+        from pyspark.sql.functions import pandas_udf
 
         @pandas_udf("double")
         def score_udf(*cols) -> pd.Series:
-            import numpy as np
             feature_df = pd.concat(list(cols), axis=1)
             feature_df.columns = FEATURE_COLS
             scores = model.decision_function(feature_df.values)

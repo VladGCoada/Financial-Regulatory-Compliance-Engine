@@ -1,0 +1,85 @@
+bundle:
+  name: databricks-financial-regulatory-engine-pyspark
+
+variables:
+  catalog:
+    description: Unity Catalog name
+    default: frce_dev
+  storage_account:
+    description: ADLS Gen2 storage account name
+    default: frcedevstorage
+
+artifacts:
+  frce_wheel:
+    type: whl
+    path: .
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${var.databricks_host}
+    variables:
+      catalog: frce_dev
+      storage_account: frcedevstorage
+
+  staging:
+    mode: production
+    workspace:
+      host: ${var.databricks_host}
+    variables:
+      catalog: frce_staging
+      storage_account: frcestagingstorage
+
+  prod:
+    mode: production
+    workspace:
+      host: ${var.databricks_host}
+    variables:
+      catalog: frce_prod
+      storage_account: frceprodsa
+
+resources:
+  jobs:
+    frce_batch:
+      name: frce_batch_${bundle.target}
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: "Europe/Amsterdam"
+      tasks:
+        - task_key: silver_payments
+          python_wheel_task:
+            package_name: frce
+            entry_point: frce.transformations.silver_payments
+          libraries:
+            - whl: ./dist/*.whl
+        - task_key: fact_payments
+          depends_on:
+            - task_key: silver_payments
+          python_wheel_task:
+            package_name: frce
+            entry_point: frce.gold.fact_payments
+          libraries:
+            - whl: ./dist/*.whl
+        - task_key: mart_aml_alerts
+          depends_on:
+            - task_key: fact_payments
+          python_wheel_task:
+            package_name: frce
+            entry_point: frce.gold.mart_aml_alerts
+          libraries:
+            - whl: ./dist/*.whl
+
+    frce_gdpr_erasure:
+      name: frce_gdpr_erasure_${bundle.target}
+      schedule:
+        quartz_cron_expression: "0 0 2 ? * SUN"
+        timezone_id: "Europe/Amsterdam"
+      tasks:
+        - task_key: gdpr_erasure
+          python_wheel_task:
+            package_name: frce
+            entry_point: frce.compliance.gdpr_erasure_pipeline
+          libraries:
+            - whl: ./dist/*.whl

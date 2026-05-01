@@ -1,0 +1,8 @@
+resources:
+  jobs:
+    frce_batch:
+      name: frce_batch_${bundle.target}
+      tasks:
+        - task_key: batch
+          spark_python_task:
+            python_file: ../../apps/batch/frce_batch.py

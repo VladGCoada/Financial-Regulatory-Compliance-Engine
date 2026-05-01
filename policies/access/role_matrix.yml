@@ -1,0 +1,13 @@
+roles:
+  compliance_analyst:
+    can_read:
+      - gold.mart_aml_alerts
+      - gold.mart_dora_incidents
+  privacy_officer:
+    can_read:
+      - gold.mart_gdpr_requests
+      - audit.erasure_audit
+  data_engineer:
+    can_read:
+      - bronze.raw_payments
+      - silver.payments_clean

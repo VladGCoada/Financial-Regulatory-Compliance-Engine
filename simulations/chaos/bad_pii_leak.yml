@@ -1,0 +1,2 @@
+fault: plaintext_pii_in_gold
+target: gold.fact_payments

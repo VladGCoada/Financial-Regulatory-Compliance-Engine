@@ -1,0 +1,3 @@
+target: prod
+variables:
+  catalog: frce_prod

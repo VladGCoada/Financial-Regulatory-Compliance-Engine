@@ -1,0 +1,2 @@
+contract_ref: ../../contracts/payments.yml
+product_table: gold.fact_payments

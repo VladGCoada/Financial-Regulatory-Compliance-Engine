@@ -1,0 +1,2 @@
+fault: schema_drift
+target: bronze.raw_payments

@@ -36,3 +36,7 @@ PAYMENT_DQ_RULES = [
         "quarantine_reason": "booked_at timestamp is in the future",
     },
 ]
+
+
+class DQRules:
+    PAYMENT = PAYMENT_DQ_RULES

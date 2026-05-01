@@ -1,0 +1,11 @@
+name: fx_rates
+owner: finance_data
+required_columns:
+  - rate_id
+  - base_currency
+  - target_currency
+  - rate
+  - rate_date
+evidence_fields:
+  - source
+  - ingested_at

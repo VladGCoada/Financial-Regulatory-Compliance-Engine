@@ -1,0 +1,13 @@
+name: model_evidence
+owner: model_risk
+required_columns:
+  - inference_id
+  - model_name
+  - model_version
+  - mlflow_run_id
+  - training_data_version
+  - input_data_version
+  - scored_at
+  - input_row_count
+  - output_schema_hash
+  - explainability_sample

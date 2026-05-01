@@ -1,0 +1,2 @@
+contract_ref: ../../contracts/counterparty.yml
+product_table: gold.dim_counterparty

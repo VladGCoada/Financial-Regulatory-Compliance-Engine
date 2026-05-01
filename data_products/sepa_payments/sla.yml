@@ -1,0 +1,6 @@
+freshness_minutes: 15
+availability_target: 99.9
+critical_tables:
+  - bronze.raw_payments
+  - silver.payments_clean
+  - gold.fact_payments

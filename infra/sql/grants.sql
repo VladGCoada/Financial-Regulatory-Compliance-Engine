@@ -1,0 +1,1 @@
+-- Unity Catalog grants are defined declaratively in policies/access/uc_grants.yml.

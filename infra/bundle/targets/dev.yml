@@ -1,0 +1,3 @@
+target: dev
+variables:
+  catalog: frce_dev

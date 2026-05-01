@@ -1,0 +1,12 @@
+name: counterparty_master
+owner: reference_data
+required_columns:
+  - counterparty_id
+  - legal_name
+  - country_code
+  - iban
+  - email
+  - risk_tier
+evidence_fields:
+  - ingested_at
+  - source_file

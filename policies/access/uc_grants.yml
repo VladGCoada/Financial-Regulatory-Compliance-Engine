@@ -1,0 +1,9 @@
+grants:
+  frce_dev.gold:
+    SELECT:
+      - compliance_analyst
+      - privacy_officer
+  frce_dev.audit:
+    SELECT:
+      - privacy_officer
+      - operational_resilience

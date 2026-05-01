@@ -1,0 +1,4 @@
+environment: local
+catalog: frce_local
+storage_account: frcelocal
+kafka_payments_topic: sepa-payments-local

@@ -1,0 +1,10 @@
+classes:
+  - public
+  - internal
+  - confidential
+  - restricted
+restricted_columns:
+  - debtor_iban
+  - creditor_iban
+  - debtor_email
+  - creditor_email

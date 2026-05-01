@@ -1,0 +1,6 @@
+tables:
+  - audit.erasure_audit
+  - gold.mart_gdpr_requests
+controls:
+  - erasure_cascade
+  - pii_masking

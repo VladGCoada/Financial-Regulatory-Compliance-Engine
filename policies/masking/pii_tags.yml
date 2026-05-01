@@ -1,0 +1,7 @@
+tags:
+  class.iban:
+    masking_function: mask_iban
+  class.email_address:
+    masking_function: mask_email
+  class.name:
+    masking_function: mask_name

@@ -1,0 +1,5 @@
+retention_days: 365
+tables:
+  - bronze.raw_payments
+  - bronze.counterparties
+  - bronze.fx_rates

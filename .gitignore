@@ -24,6 +24,7 @@ Thumbs.db
 data/
 *.jsonl
 *.csv
+frce_2035_magic_monolith.py
 __pycache__/
 .venv/
 .env

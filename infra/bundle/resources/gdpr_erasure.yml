@@ -1,0 +1,8 @@
+resources:
+  jobs:
+    frce_gdpr_erasure:
+      name: frce_gdpr_erasure_${bundle.target}
+      tasks:
+        - task_key: erasure
+          spark_python_task:
+            python_file: ../../apps/gdpr_erasure/frce_gdpr_erasure.py

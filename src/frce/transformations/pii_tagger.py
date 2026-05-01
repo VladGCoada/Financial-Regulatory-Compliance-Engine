@@ -70,3 +70,6 @@ class PiiTagger:
             except Exception as exc:
                 logger.warning("Failed to tag %s: %s", col, exc)
         return applied
+
+
+PIITagger = PiiTagger

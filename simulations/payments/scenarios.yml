@@ -1,0 +1,4 @@
+scenarios:
+  - normal_day
+  - aml_spike
+  - schema_drift

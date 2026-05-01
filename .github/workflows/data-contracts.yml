@@ -1,0 +1,18 @@
+name: Data Contracts
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  validate-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate contract files exist
+        run: |
+          test -f contracts/payments.yml
+          test -f contracts/counterparty.yml
+          test -f contracts/fx_rates.yml
+          test -f contracts/model_evidence.yml

@@ -1,0 +1,7 @@
+type: SCD2
+business_key: counterparty_id
+tracked_columns:
+  - legal_name
+  - country_code
+  - risk_tier
+  - email

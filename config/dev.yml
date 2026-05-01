@@ -1,0 +1,4 @@
+environment: dev
+catalog: frce_dev
+storage_account: frcedevstorage
+kafka_payments_topic: sepa-payments

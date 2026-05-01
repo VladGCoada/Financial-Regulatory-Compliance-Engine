@@ -1,0 +1,4 @@
+scenarios:
+  - single_iban
+  - repeated_request
+  - nonexistent_iban

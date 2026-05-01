@@ -1,0 +1,14 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secrets policy present
+        run: test -f security/secrets_policy.md

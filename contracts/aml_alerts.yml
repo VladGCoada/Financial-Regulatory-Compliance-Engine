@@ -1,0 +1,9 @@
+name: aml_alerts
+owner: compliance_aml
+required_columns:
+  - payment_id
+  - transaction_reference
+  - aml_flags
+  - max_risk_score
+  - is_flagged
+  - alert_created_at

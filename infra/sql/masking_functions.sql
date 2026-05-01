@@ -1,0 +1,1 @@
+-- Masking functions live in policies/masking/*.sql and are deployed by bundle jobs.

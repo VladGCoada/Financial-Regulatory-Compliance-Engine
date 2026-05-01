@@ -1,0 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS frce_dev.bronze;
+CREATE SCHEMA IF NOT EXISTS frce_dev.silver;
+CREATE SCHEMA IF NOT EXISTS frce_dev.gold;
+CREATE SCHEMA IF NOT EXISTS frce_dev.audit;
+CREATE SCHEMA IF NOT EXISTS frce_dev.compliance;

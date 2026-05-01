@@ -1,0 +1,5 @@
+rules:
+  - payment_id_not_null
+  - amount_positive
+  - currency_valid
+  - debtor_iban_not_null

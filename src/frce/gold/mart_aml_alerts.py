@@ -5,9 +5,9 @@ import logging
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
-from frce.base_task import BaseTask
 from frce.compliance.aml_rule_engine import AmlRuleEngine
 from frce.config import FrceConfig
+from frce.core import BaseTask
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +27,13 @@ class MartAmlAlertsTask(BaseTask):
         return (
             self.get_spark()
             .read.format("delta")
-            .table(f"{self.config.catalog}.silver.payments")
+            .table(self.config.silver_payments_table)
         )
 
     def build(self, df: DataFrame) -> DataFrame:
         scored = self.aml.apply(df)
         return (
-            scored.filter(F.col("is_flagged") == True)
+            scored.filter(F.col("is_flagged"))
             .withColumn("alert_created_at", F.current_timestamp())
             .select(
                 "payment_id", "transaction_reference",
@@ -46,6 +46,6 @@ class MartAmlAlertsTask(BaseTask):
     def run(self) -> None:
         df = self.read_silver()
         alerts = self.build(df)
-        target = f"{self.config.catalog}.gold.mart_aml_alerts"
+        target = self.config.gold_mart_aml_alerts_table
         alerts.write.format("delta").mode("overwrite").saveAsTable(target)
         logger.info("MartAmlAlertsTask: wrote %d alerts", alerts.count())

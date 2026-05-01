@@ -4,7 +4,6 @@ import logging
 
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
-from pyspark.sql.types import StringType
 
 from frce.base_task import BaseTask
 from frce.common_schemas import SEPA_PAYMENT_SCHEMA
@@ -59,3 +58,7 @@ class PaymentsStreamBronzeTask(BaseTask):
         df = self.add_metadata(df)
         self.write_stream(df)
         logger.info("PaymentsStreamBronzeTask started")
+
+
+def main() -> None:
+    PaymentsStreamBronzeTask(FrceConfig()).run()

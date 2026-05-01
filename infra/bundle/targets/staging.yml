@@ -1,0 +1,3 @@
+target: staging
+variables:
+  catalog: frce_staging

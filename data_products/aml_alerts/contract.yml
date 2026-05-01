@@ -1,0 +1,4 @@
+evidence_table: gold.mart_aml_alerts
+regulatory_mapping:
+  - DORA Article 9
+  - EU AML Directive

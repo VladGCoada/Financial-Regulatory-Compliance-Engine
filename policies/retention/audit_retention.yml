@@ -1,0 +1,4 @@
+retention_years: 7
+tables:
+  - audit.pipeline_runs
+  - audit.erasure_audit

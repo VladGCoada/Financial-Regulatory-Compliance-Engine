@@ -1,0 +1,5 @@
+retention_days: 730
+tables:
+  - silver.payments_clean
+  - silver.counterparties
+  - silver.fx_rates

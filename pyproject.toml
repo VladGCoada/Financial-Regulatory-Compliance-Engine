@@ -3,11 +3,11 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "frce"
+name = "databricks-financial-regulatory-engine-pyspark"
 version = "0.1.0"
-description = "Financial Regulatory Compliance Engine"
+description = "Databricks Financial Regulatory Engine for PySpark"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 authors = [
   { name = "Vlad Coada" }
 ]
@@ -27,6 +27,12 @@ dev = [
   "ruff>=0.4,<1.0"
 ]
 
+[project.scripts]
+frce-batch = "frce.pipeline_runner:main"
+frce-streaming = "frce.ingestion.payments_stream_bronze:main"
+frce-gdpr-erasure = "frce.compliance.gdpr_erasure_pipeline:main"
+frce-incident-classifier = "frce.gold.mart_dora_incidents:main"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
@@ -36,3 +42,21 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+force-exclude = true
+extend-exclude = [
+  "src/frce/tests",
+  "src/frce/scripts",
+  "src/frce/infra",
+  "src/frce/docs",
+  "src/frce/resources",
+  "src/frce/intelligence/eu-energy-intelligence-platform",
+]
+
+[tool.ruff.lint]
+ignore = ["N812"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["E712", "F401", "F841", "I001"]

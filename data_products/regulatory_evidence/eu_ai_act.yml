@@ -1,0 +1,5 @@
+tables:
+  - gold.mart_model_registry
+controls:
+  - inference_traceability
+  - model_transparency

@@ -1,0 +1,3 @@
+rules:
+  - counterparty_id_not_null
+  - risk_tier_valid

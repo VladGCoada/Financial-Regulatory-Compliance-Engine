@@ -1,0 +1,6 @@
+type: rule_based
+engine: frce.compliance.aml.rule_engine.AmlRuleEngine
+outputs:
+  - aml_flags
+  - max_risk_score
+  - is_flagged

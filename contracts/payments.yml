@@ -1,0 +1,14 @@
+name: sepa_payments
+owner: payments_platform
+required_columns:
+  - payment_id
+  - transaction_reference
+  - debtor_iban
+  - creditor_iban
+  - amount
+  - currency
+  - country_code
+  - booked_at
+evidence_fields:
+  - ingested_at
+  - source_system

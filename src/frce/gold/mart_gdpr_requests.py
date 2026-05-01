@@ -5,8 +5,8 @@ import logging
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
-from frce.base_task import BaseTask
 from frce.config import FrceConfig
+from frce.core import BaseTask
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +25,14 @@ class MartGdprRequestsTask(BaseTask):
         return (
             self.get_spark()
             .read.format("delta")
-            .table(f"{self.config.catalog}.compliance.erasure_requests")
+            .table(self.config.compliance_erasure_requests_table)
         )
 
     def read_audit(self) -> DataFrame:
         return (
             self.get_spark()
             .read.format("delta")
-            .table(f"{self.config.catalog}.audit.erasure_audit")
+            .table(self.config.audit_erasure_audit_table)
         )
 
     def build(self, requests: DataFrame, audit: DataFrame) -> DataFrame:
@@ -57,6 +57,6 @@ class MartGdprRequestsTask(BaseTask):
         requests = self.read_requests()
         audit = self.read_audit()
         mart = self.build(requests, audit)
-        target = f"{self.config.catalog}.gold.mart_gdpr_requests"
+        target = self.config.gold_mart_gdpr_requests_table
         mart.write.format("delta").mode("overwrite").saveAsTable(target)
         logger.info("MartGdprRequestsTask complete")

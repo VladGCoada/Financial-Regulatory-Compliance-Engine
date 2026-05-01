@@ -1,0 +1,5 @@
+upstream:
+  - kafka.sepa_payments
+downstream:
+  - gold.fact_payments
+  - gold.mart_aml_alerts

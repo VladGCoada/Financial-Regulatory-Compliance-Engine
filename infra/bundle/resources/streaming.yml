@@ -1,0 +1,8 @@
+resources:
+  jobs:
+    frce_streaming:
+      name: frce_streaming_${bundle.target}
+      tasks:
+        - task_key: payments_stream
+          spark_python_task:
+            python_file: ../../apps/streaming/frce_payments_stream.py
